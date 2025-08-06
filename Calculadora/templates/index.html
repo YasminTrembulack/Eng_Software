@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    <title>Document</title>
+</head>
+<body>
+<body>
+    {% if 'Erro' in resultado|string %}
+        <h1 class="erro">{{ resultado }}</h1>
+    {% elif resultado is number %}
+        <h2>Resultado:</h2>
+        <h1>{{ "%.2f"|format(resultado)|replace('.', ',') }}</h1>
+    {% endif %}
+
+    <form method="POST">
+        <input type="number" name="num_01" placeholder="Informe o 1º Número" step="any" required>
+        <input type="number" name="num_02" placeholder="Informe o 2º Número" step="any" required>
+
+        <select name="op" required>
+            <option value="soma">+</option>
+            <option value="subtracao">-</option>
+            <option value="multiplicacao">×</option>
+            <option value="divisao">÷</option>
+        </select>
+
+        <button type="submit">=</button>
+    </form>
+</body>
+</html>
