@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+    <link rel="stylesheet" href="formulario.css">
+</head>
+<body>
+    <main>
+        <table class="estrutura_inicial">
+            <tr class="estrutura_linha">
+                <td class="estrutura_form">
+                    <form id="formulario" onsubmit="contato.Enviar(event)">
+                        <label for="nome" >Nome</label>
+                        <input type="text" name="nome" minlength="3" maxlength="255" placeholder="Digite seu nome aqui..." id="nome" required>
+    
+                        <label for="email">Email</label>
+                        <input type="email" name="email" placeholder="Digite seu email aqui..." id="email" required>
+    
+                        <label for="telefone">Telefone</label>
+                        <input type="text" name="telefone" placeholder="(11) 91234-5678" id="telefone" minlength="10" minlength="17" required>
+    
+                        <label for="mensagem">Mensagem</label>
+                        <textarea id="mensagem" name="mensagem" rows="4" placeholder="Digite sua mensagem aqui..."></textarea>
+                        
+                        <label for="tipo_contato">Tipo de contato</label>
+                        <input type="text" name="tipo_contato" placeholder="Digite o tipo de contato aqui..." id="tipo_contato">
+
+                        <label for="data_cadastro">Data de Cadastro</label>
+                        <input type="date" name="data_cadastro" id="data_cadastro">
+    
+                        <div>
+                            <button id="enviar">enviar</button>
+                            <button id="limpar">limpar</button>      
+                        </div>
+
+                    </form>
+                </td>
+                <td class="estrutura_grid">
+                    <table id="grid">
+                        <thead>
+                            <tr id="grid_linha">
+                                <th id="g_nome">Nome</th>
+                                <th id="g_email">Email</th>
+                                <th id="g_fone">Telefone</th>
+                                <th id="g_mensagem">Mensagem</th>
+                                <th id="g_data_cadastro">Data de Cadastro</th>
+                                <th id="g_tipo_contato">Tipo de contato</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>      
+    </main>
+    <script src="formulario.js"></script>
+</body>
+</html>
