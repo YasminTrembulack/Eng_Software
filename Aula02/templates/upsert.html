@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>{{ 'Editar Usuário' if user else 'Cadastrar Usuário' }}</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div id="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+        
+    <header>
+        <h1>{{ 'Editar Usuário' if user else 'Cadastrar Usuário' }}</h1>
+        <p><a href="{{ url_for('list_users') }}">Ver lista de usuários</a></p>
+    </header>
+
+    <form action="{{ url_for('update_user', user_id=user.id) if user else url_for('create_user') }}" 
+          method="POST" class="create-form">
+
+        <input type="text" name="description" placeholder="Nome" 
+               value="{{ user.nome if user else '' }}" required />
+
+        <input type="date" name="birthday" placeholder="Aniversário" 
+               value="{{ user.aniversario if user else '' }}" required />
+
+        <input type="email" name="email" placeholder="Email" 
+               value="{{ user.email if user else '' }}" required />
+
+        {% if not user %}
+            <input type="password" name="password" placeholder="Senha" required />
+        {% endif %}
+
+        <button type="submit">{{ 'Salvar alterações' if user else 'Cadastrar' }}</button>
+    </form>
+    <script>
+        setTimeout(() => {
+            const flash = document.getElementById('flash-messages');
+            if (flash) {
+                flash.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

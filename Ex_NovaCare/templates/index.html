@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>NovaCare</title>
+</head>
+
+<body>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div id="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <header>
+        <h1>Consultas NovaCare</h1>
+        <p><a href="{{ url_for('create_appointment') }}">Marcar nova consulta</a></p>
+    </header>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>Paciente</th>
+                <th>Medico</th>
+                <th>Especialidade</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for date, daily_appointments in appointments.items() %}
+                <tr>
+                    <td class="date" colspan="7">{{ date.strftime("%d/%m/%Y") }}</td>
+                </tr>
+                {% for appointment in daily_appointments %}
+                    <tr>
+                        <td></td>
+                        <td>{{ appointment.data_consulta.strftime("%H:%M") }}</td>
+                        <td>{{ appointment.nome_paciente }}</td>
+                        <td>{{ appointment.nome_medico }}</td>
+                        <td>{{ appointment.especialidade }}</td>
+                        <td>
+                            <a href="{{ url_for('update_appointment', appointment_id=appointment['id']) }}">✎</a>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('delete_appointment', appointment_id=appointment['id']) }}"
+                                onclick="return confirm('Tem certeza que deseja deletar este agendamento?');">🗑</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            {% else %}
+            <tr>
+                <td colspan="6" class="empty">Nenhuma consulta encontrado</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        setTimeout(() => {
+            const flash = document.getElementById('flash-messages');
+            if (flash) {
+                flash.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+</body>
+
+</html>
