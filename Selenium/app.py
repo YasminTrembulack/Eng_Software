@@ -27,11 +27,12 @@ driver = webdriver.Chrome(
 @dataclass
 class Book():
     title: str
+    img_link: str
     description: str
+    star_rating: int
     br_price: float
     availability: bool
     stock_qtd: int
-    star_rating: int
     
 
 
@@ -48,7 +49,6 @@ try:
         links.append(link)
     
     for link in links:
-        
         driver.get(link)
         
 
