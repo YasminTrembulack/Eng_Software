@@ -10,47 +10,55 @@
 
 <body>
     {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-        <div id="flash-messages">
-            {% for category, message in messages %}
-                <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-        </div>
-        {% endif %}
+    {% if messages %}
+    <div id="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
     {% endwith %}
 
     <header>
         <h1>Arquivos</h1>
     </header>
-    <h2>Upload Arquivo</h2>
-    <form action="/diretorio" method="POST" enctype="multipart/form-data">
-        <p>
-            <input type="file" name="meu_arquivo" id="meu_arquivo" required>
-            <br>
-        </p>
-        <button type="submit">Enviar</button>
-    </form>
+    <main>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for arquivo in arquivos %}
-            <tr>
-                <td>{{ arquivo }}</td>
-                <a href="{{ url_for('download', filename=arquivo) }}"></a>
-            </tr>
-            {% else %}
+        <div class="upload-form">
+            <h2>Upload:</h2>
+            <form action="/diretorio" method="POST" enctype="multipart/form-data">
+                <p>
+                    <input type="file" name="meu_arquivo" id="meu_arquivo" required>
+                </p>
+                <p>
+                    <button type="submit">Enviar</button>
+                </p>
+            </form>
+        </div>
+    
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for arquivo in arquivos %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('download', filename=arquivo) }}">
+                            {{ arquivo }}
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
                 <tr>
                     <td colspan="2" class="empty">Nenhum arquivo encontrado</td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </main>
     <script>
         setTimeout(() => {
             const flash = document.getElementById('flash-messages');

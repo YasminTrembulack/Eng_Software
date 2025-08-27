@@ -3,7 +3,6 @@ from flask import Flask, render_template, request, redirect, flash, url_for, sen
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-
 UPLOAD_FOLDER = 'C:\\Users\\yastr\\Desktop\\Projects\\Faculdade\\Aula02\\diretorio'
 
 
@@ -17,6 +16,29 @@ def index():
             arquivos.append(nome_arquivo)
             
     return render_template('index.html', arquivos=arquivos)    
+
+
+#UPLOAD
+@app.route('/diretorio', methods=['POST'])
+def upload():
+    if 'meu_arquivo' not in request.files:
+        return redirect(request.url)
+    file = request.files['meu_arquivo']
+
+    if file.filename == '':
+        return redirect(request.url)
+    
+    if file:
+        filename = secure_filename(file.filename)
+        savePath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(savePath)
+        return redirect(url_for('index'))
+    return redirect('/')
+
+#DOWNLOAD
+@app.route('/download/<filename>')
+def download(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
 
 
 if __name__ == "__main__":
