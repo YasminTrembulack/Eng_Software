@@ -25,6 +25,10 @@ db_config = {
 service = Service(PATH_DRIVER)
 chrome_options = Options()
 chrome_options.add_argument("--log-level=3")
+chrome_options.add_argument("--headless")  # não abre janela
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
 
 driver = webdriver.Chrome(service=service, options=chrome_options)
 @dataclass
@@ -142,6 +146,10 @@ try:
         image_container = driver.find_elements(By.CLASS_NAME, "image_container")
         links = [c.find_element(By.TAG_NAME, "a").get_attribute('href') for c in image_container]
         books_to_insert.extend(scrape_books(links))
+        
+        if len(links) < 20:
+            BOOK_ERRORS.append({'page': page_link, 'links': links})
+        
         driver.get(page_link)
         
         if len(books_to_insert) >= 80:
