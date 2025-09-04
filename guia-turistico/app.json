@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Eng_Software",
-    "slug": "Eng_Software",
+    "name": "guia-turistico",
+    "slug": "guia-turistico",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
