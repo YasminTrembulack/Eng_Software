@@ -1,4 +1,5 @@
 import discord
+from discord import Embed, ButtonStyle
 from discord.ext import commands
 from discord.ui import Button, View
 from datetime import datetime, timedelta
@@ -17,6 +18,12 @@ class Calendar(commands.Cog):
     @commands.command(name='calendario')
     async def calendar(self, ctx):
         """Shows the next 7 days for the user to pick a date"""
+        
+            # ✅ Só permite no canal "reservations"
+        if ctx.channel.name != "📅reservations":
+            await ctx.send("⚠️ Este comando só pode ser usado no canal 'reservations'.", delete_after=10)
+            return
+    
         today = datetime.today()
         embed = discord.Embed(title="📅 Reservation Calendar",
                               description="Choose a day to make a reservation",
@@ -125,28 +132,89 @@ class Calendar(commands.Cog):
                 ephemeral=True)
             return
 
-        # Save reservations by user ID
-        for h in range(start_hour, end_hour):
-            self.reservations[date][f"{h:02d}:00"] = interaction.user.id
 
-        # Send DM confirmation
-        try:
-            await interaction.user.send(
-                f"✅ Your reservation on **{date}** from **{start_time}** to **{end_time}** has been confirmed!"
-            )
-        except discord.Forbidden:
-            await interaction.response.send_message(
-                f"⚠️ {interaction.user.mention}, I couldn’t send you a DM. Please enable DMs to receive confirmations.",
-                ephemeral=True)
+        # # Save reservations by user ID
+        # for h in range(start_hour, end_hour):
+        #     self.reservations[date][f"{h:02d}:00"] = interaction.user.id
+
+        # # Send DM confirmation
+        # try:
+        #     await interaction.user.send(
+        #         f"✅ Your reservation on **{date}** from **{start_time}** to **{end_time}** has been confirmed!"
+        #     )
+        # except discord.Forbidden:
+        #     await interaction.response.send_message(
+        #         f"⚠️ {interaction.user.mention}, I couldn’t send you a DM. Please enable DMs to receive confirmations.",
+        #         ephemeral=True)
+        #     return
+
+        # print(f"✅ Reservation confirmed for {interaction.user.name} ({interaction.user.id}) on {date} from {start_time} to {end_time}")
+        # print(f"Global name: {interaction.user.global_name}")
+
+
+        # 🔹 Não salvar ainda como confirmada, apenas marcar como pendente
+        self.reservations[date][f"{start_hour:02d}:00-{end_hour:02d}:00"] = {
+            "user_id": interaction.user.id,
+            "status": "pending"
+        }
+
+        # Mensagem para o usuário
+        await interaction.response.send_message(
+            "📨 Sua reserva foi enviada para aprovação de um responsável.\n"
+            "Você receberá uma mensagem assim que for **aprovada ou rejeitada**.",
+            ephemeral=True
+        )
+
+        # Envia para canal de aprovação
+        await self.send_for_approval(interaction.user, date, start_time, end_time)
+
+    # ---------------- Send reservation to approval channel ----------------
+    async def send_for_approval(self, user, date, start_time, end_time):
+        channel = discord.utils.get(self.bot.get_all_channels(), name="📝pending-approval")  
+
+        if not channel:
+            print("❌ Canal 'pending-approval' não encontrado.")
             return
 
-        print(
-            f"✅ Reservation confirmed for {interaction.user.name} ({interaction.user.id}) on {date} from {start_time} to {end_time}"
+        embed = discord.Embed(
+            title="📝 Nova reserva pendente",
+            description=f"**Usuário:** {user.mention}\n"
+                        f"**Data:** {date}\n"
+                        f"**Início:** {start_time}\n"
+                        f"**Fim:** {end_time}",
+            color=discord.Color.orange()
         )
-        print(f"Global name: {interaction.user.global_name}")
 
-        await interaction.response.send_message(
-            "✅ Reservation confirmed! (check your DM 👀)", ephemeral=True)
+        view = View()
+
+        approve_btn = Button(label="Aprovar ✅", style=discord.ButtonStyle.green)
+        reject_btn = Button(label="Recusar ❌", style=discord.ButtonStyle.red)
+
+        async def approve_callback(interaction):
+            role = discord.utils.get(interaction.guild.roles, name="Teacher")
+            if role not in interaction.user.roles:
+                await interaction.response.send_message("⚠️ Você não tem permissão para aprovar reservas.", ephemeral=True)
+                return
+
+            await user.send(f"🎉 Sua reserva em **{date}** das **{start_time}** às **{end_time}** foi **APROVADA**!")
+            await channel.send(f"✅ Reserva de {user.mention} aprovada por {interaction.user.mention}")
+
+        async def reject_callback(interaction):
+            role = discord.utils.get(interaction.guild.roles, name="Teacher")
+            if role not in interaction.user.roles:
+                await interaction.response.send_message("⚠️ Você não tem permissão para recusar reservas.", ephemeral=True)
+                return
+
+            await user.send(f"🚫 Sua reserva em **{date}** das **{start_time}** às **{end_time}** foi **RECUSADA**.")
+            await channel.send(f"❌ Reserva de {user.mention} recusada por {interaction.user.mention}")
+
+        approve_btn.callback = approve_callback
+        reject_btn.callback = reject_callback
+
+        view.add_item(approve_btn)
+        view.add_item(reject_btn)
+
+        await channel.send(embed=embed, view=view)
 
 
 # ---------------- Setup function to load the Cog ----------------

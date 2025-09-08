@@ -49,3 +49,8 @@ Preferred communication style: Simple, everyday language.
 ## Future Integrations
 - Database system planned for persistent reservation storage
 - Potential webhook integrations for external calendar systems
+
+
+
+https://chatgpt.com/share/68ba2b11-dd74-8001-a2c7-cf585af66e82
+https://chatgpt.com/share/68ba2b33-86a0-8001-bbbb-f2ed7c33946f
