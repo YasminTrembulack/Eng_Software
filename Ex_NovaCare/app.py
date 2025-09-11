@@ -4,16 +4,10 @@ import mysql.connector
 
 from flask import Flask, render_template, request, redirect, flash
 
-app = Flask(__name__, template_folder="templates", static_folder="static")
+from config import db_config
+
+app = Flask(__name__, template_folder="./views/templates", static_folder="./views/static")
 app.secret_key = os.urandom(24)
-
-
-db_config = {
-    'host': '127.0.0.1',
-    'user': 'root',
-    'password': 'root',
-    'database': 'backend_development'
-}
 
 
 # CRUD - READ
