@@ -29,7 +29,7 @@ def get_cursor(dictionary: bool = True) -> Generator[MySQLCursorDict, None, None
             conn.close()
 
 
-class User:
+class Appointment:
     @staticmethod
     def get_appointments():
         try:
@@ -37,22 +37,21 @@ class User:
                 cursor.execute("SELECT * FROM nc_appointments")
                 return cursor.fetchall()
         except Exception as e:
-            logger.exception(f"Erro ao buscar usuários: {e}")
+            logger.exception(f"Erro ao buscar consultas: {e}")
             return []
 
     @staticmethod
-    def create_appointment(name: str, email: str, password: str, birthday: str) -> bool:
+    def create_appointment(patient: str, doctor: str, specialty: str, date: str) -> bool:
         try:
-            # gerar hash da senha
             with get_cursor() as cursor:
                 cursor.execute(
                     """
-                        INSERT INTO nc_appointments (name, email, password, birthday)
+                        INSERT INTO nc_appointments (nome_paciente, nome_medico, especialidade, data_consulta)
                         VALUES (%s, %s, %s, %s)
                     """,
-                    (name, email, hashed_pw.decode("utf-8"), birthday)
+                    (patient, doctor, specialty, date)
                 )
             return True
         except Exception as e:
-            logger.exception(f"Erro ao criar usuário: {e}")
+            logger.exception(f"Erro ao criar consulta: {e}")
             return False
