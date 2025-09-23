@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>Lista de Ingressos</title>
+</head>
+
+<body>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+        <div id="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <header>
+        <h1>Ingressos</h1>
+        <p><a href="/add">Cadastrar Ingresso</a></p>
+    </header>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Filme</th>
+                <th>Genero</th>
+                <th>Sessão</th>
+                <th>Cliente</th>
+                <th>Assento</th>
+                <th>Data</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in dados %}
+            <tr>
+                <td>{{ d.id }}</td>
+                <td>{{ d.nome_filme }}</td>
+                <td>{{ d.genero }}</td>
+                <td>{{ d.sessoes }}</td>
+                <td>{{ d.nome_cliente }}</td>
+                <td>{{ d.assento }}</td>
+                <td>{{ d.data_filme }}</td>
+                <td>
+                    <a href="{{ url_for('update_ingresso', ingresso_id=d.id) }}">✎</a>
+                </td>
+                <td>
+                    <a href="{{ url_for('delete_ingresso', ingresso_id=d.id) }}"
+                    onclick="return confirm('Tem certeza que deseja deletar este ingresso?');">
+                    🗑
+                    </a>
+                </td>
+            </tr>
+
+            {% else %}
+                <tr>
+                    <td colspan="7" class="empty">Nenhum ingresso registrado até o momento...</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        setTimeout(() => {
+            const flash = document.getElementById('flash-messages');
+            if (flash) {
+                flash.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+</body>
+
+</html>
