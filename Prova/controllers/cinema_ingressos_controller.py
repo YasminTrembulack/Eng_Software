@@ -15,8 +15,8 @@ def configure_routes(app):
             return render_template('index.html', dados=[])
 
 
-    @app.route('/add', methods=['GET', 'POST'])
-    def add_ingressos():
+    @app.route('/create', methods=['GET', 'POST'])
+    def create_ingressos():
         if request.method == 'POST':
             try:
                 Ingresso.create_ingresso(
@@ -30,9 +30,9 @@ def configure_routes(app):
                 flash('Ingresso cadastrado com sucesso!', 'success')
             except Exception:
                 flash('Erro ao cadastrar ingresso.', 'error')
-        return render_template('upsert.html')
+        return render_template('create.html')
 
-    @app.route('/edit/<int:ingresso_id>', methods=['GET', 'POST'])
+    @app.route('/update/<int:ingresso_id>', methods=['GET', 'POST'])
     def update_ingresso(ingresso_id):
         if request.method == 'POST':
             Ingresso.update_ingresso(
@@ -50,7 +50,7 @@ def configure_routes(app):
 
         elif request.method == 'GET':
             ingresso = Ingresso.get_ingresso(id=ingresso_id)        
-            return render_template('upsert.html', ticket=ingresso)
+            return render_template('update.html', ticket=ingresso)
 
     @app.route('/delete/<int:ingresso_id>', methods=['GET'])
     def delete_ingresso(ingresso_id):

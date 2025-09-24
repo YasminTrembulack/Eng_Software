@@ -1,94 +1,96 @@
 from datetime import datetime
-from loguru import logger
-from typing import Generator
-from contextlib import contextmanager
 from mysql.connector import connect, Error
-from mysql.connector.cursor import MySQLCursorDict
 
 from config import db_config
 
 
-@contextmanager
-def get_cursor(dictionary: bool = True) -> Generator[MySQLCursorDict, None, None]:
-    conn = None
-    cursor = None
+def get_cursor(dictionary: bool = True):
     try:
         conn = connect(**db_config)
         cursor = conn.cursor(dictionary=dictionary)
-        yield cursor
-        conn.commit()
+        return conn, cursor
     except Error as e:
-        logger.exception(f"Erro ao conectar no banco: {e}")
-        if conn:
-            conn.rollback()
+        print(f"Erro ao conectar no banco: {e}")
         raise
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
 
 
 class Ingresso:
     @staticmethod
     def get_ingressos():
         try:
-            with get_cursor() as cursor:
-                cursor.execute("SELECT *, DATE_FORMAT(data_filme, '%d/%m/%Y') as data_filme FROM cinema.cinema_ingressos ORDER BY data_filme ASC")
-                return cursor.fetchall()
+            conn, cursor = get_cursor()
+            cursor.execute("SELECT *, DATE_FORMAT(data_filme, '%d/%m/%Y') as data_filme FROM cinema.cinema_ingressos ORDER BY data_filme ASC")
+            return cursor.fetchall()
         except Exception as e:
-            logger.exception(f"Erro ao buscar ingressos: {e}")
+            print(f"Erro ao buscar ingressos: {e}")
             return []
+        finally:
+            cursor.close()
+            conn.close()
         
     @staticmethod
     def excluir_ingresso(id: int):
         try:
-            with get_cursor() as cursor:
-                cursor.execute("DELETE FROM cinema.cinema_ingressos WHERE id = %s", (id,))
+            conn, cursor = get_cursor()
+            cursor.execute("DELETE FROM cinema.cinema_ingressos WHERE id = %s", (id,))
+            conn.commit()
             return True
         except Exception as e:
-            logger.exception(f"Erro ao deletar ingressos: {e}")
+            print(f"Erro ao deletar ingressos: {e}")
             return False
+        finally:
+            cursor.close()
+            conn.close()
     
     @staticmethod
     def get_ingresso(id: int):
         try:
-            with get_cursor() as cursor:
-                cursor.execute("SELECT * FROM cinema.cinema_ingressos WHERE id = %s", (id,))
-                return cursor.fetchone()
+            conn, cursor = get_cursor()
+            cursor.execute("SELECT * FROM cinema.cinema_ingressos WHERE id = %s", (id,))
+            return cursor.fetchone()
         except Exception as e:
-            logger.exception(f"Erro ao buscar ingresso: {e}")
+            print(f"Erro ao buscar ingresso: {e}")
             return None
+        finally:
+            cursor.close()
+            conn.close()
 
     @staticmethod
     def create_ingresso(nome_filme: str, genero: str, sessoes: str, nome_cliente: str, assento: str, data_filme: datetime) -> bool:
         try:
-            with get_cursor() as cursor:
-                cursor.execute(
-                    """
-                        INSERT INTO cinema.cinema_ingressos (nome_filme, genero, sessoes, nome_cliente, assento, data_filme)
-                        VALUES (%s, %s, %s, %s, %s, %s)
-                    """,
-                    (nome_filme, genero, sessoes, nome_cliente, assento, data_filme)
-                )
+            conn, cursor = get_cursor()
+            cursor.execute(
+                """
+                    INSERT INTO cinema.cinema_ingressos (nome_filme, genero, sessoes, nome_cliente, assento, data_filme)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                """,
+                (nome_filme, genero, sessoes, nome_cliente, assento, data_filme)
+            )
+            conn.commit()
             return True
         except Exception as e:
-            logger.exception(f"Erro ao criar ingresso: {e}")
+            print(f"Erro ao criar ingresso: {e}")
             return False
+        finally:
+            cursor.close()
+            conn.close()
     
     @staticmethod
     def update_ingresso(id: int, nome_filme: str, genero: str, sessoes: str, nome_cliente: str, assento: str, data_filme: datetime) -> bool:
         try:
-            print(id)
-            with get_cursor() as cursor:
-                cursor.execute(
-                    """
-                       UPDATE cinema.cinema_ingressos SET nome_filme = %s, genero = %s, sessoes = %s, nome_cliente = %s, assento = %s, data_filme = %s WHERE id = %s
-                    """,
-                    (nome_filme, genero, sessoes, nome_cliente, assento, data_filme, id)
-                )
+            conn, cursor = get_cursor()
+            cursor.execute(
+                """
+                    UPDATE cinema.cinema_ingressos SET nome_filme = %s, genero = %s, sessoes = %s, nome_cliente = %s, assento = %s, data_filme = %s WHERE id = %s
+                """,
+                (nome_filme, genero, sessoes, nome_cliente, assento, data_filme, id)
+            )
+            conn.commit()
             return True
         except Exception as e:
-            logger.exception(f"Erro ao atualizar ingresso: {e}")
+            print(f"Erro ao atualizar ingresso: {e}")
             return False
+        finally:
+            cursor.close()
+            conn.close()
         

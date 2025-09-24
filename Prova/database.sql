@@ -1,8 +1,8 @@
-CREATE DATABASE IF NOT EXISTS cinema;
+CREATE DATABASE cinema;
 
 USE cinema;
 
-CREATE TABLE IF NOT EXISTS cinema_ingressos (
+CREATE TABLE IF cinema_ingressos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_filme VARCHAR(255) NOT NULL,
     genero VARCHAR(100),

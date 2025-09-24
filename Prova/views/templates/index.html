@@ -21,7 +21,7 @@
 
     <header>
         <h1>Ingressos</h1>
-        <p><a href="/add">Cadastrar Ingresso</a></p>
+        <p><a href="/create">Cadastrar Ingresso</a></p>
     </header>
     <table>
         <thead>
@@ -48,13 +48,10 @@
                 <td>{{ d.assento }}</td>
                 <td>{{ d.data_filme }}</td>
                 <td>
-                    <a href="{{ url_for('update_ingresso', ingresso_id=d.id) }}">✎</a>
+                    <a href="{{ url_for('update_ingresso', ingresso_id=d.id) }}">Edit</a>
                 </td>
                 <td>
-                    <a href="{{ url_for('delete_ingresso', ingresso_id=d.id) }}"
-                    onclick="return confirm('Tem certeza que deseja deletar este ingresso?');">
-                    🗑
-                    </a>
+                    <a href="{{ url_for('delete_ingresso', ingresso_id=d.id) }}">X</a>
                 </td>
             </tr>
 
