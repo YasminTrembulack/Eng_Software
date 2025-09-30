@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>{{ 'Editar Tarefa' if task else 'Cadastrar Tarefa' }}</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div id="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+        
+    <header>
+        <h1>{{ 'Editar Tarefa' if task else 'Cadastrar Tarefa' }}</h1>
+        <p><a href="/">Voltar</a></p>
+    </header>
+
+    <form action="{{ url_for('update_task', task_id=task.id) if task else url_for('add_task') }}" method="POST" class="create-form">
+
+        <input type="text" name="title" placeholder="Nome da tarefa" 
+               value="{{ task.title if task else '' }}" required />
+
+        <input type="text" name="description" placeholder="Descrição" 
+               value="{{ task.description if task else '' }}" required />
+        
+        <select name="priority" required>
+            <option value="">Selecione a prioridade</option>
+            <option value="low" {{ 'selected' if task and task.priority == 'low' else '' }}>Baixo</option>
+            <option value="medium" {{ 'selected' if task and task.priority == 'medium' else '' }}>Médio</option>
+            <option value="high" {{ 'selected' if task and task.priority == 'high' else '' }}>Alto</option>
+        </select>
+
+        {% if task %}
+            <select name="status" required>
+                <option value="">Selecione o status</option>
+                <option value="pending" {{ 'selected' if task and task.status == 'pending' else '' }}>Pendente</option>
+                <option value="done" {{ 'selected' if task and task.status == 'done' else '' }}>Concluída</option>
+            </select>
+        {% endif %}
+
+        <button type="submit">{{ 'Salvar alterações' if task else 'Cadastrar' }}</button>
+    </form>
+    <script>
+        setTimeout(() => {
+            const flash = document.getElementById('flash-messages');
+            if (flash) {
+                flash.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

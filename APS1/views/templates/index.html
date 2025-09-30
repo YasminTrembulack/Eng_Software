@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <title>Lista de Tarefas</title>
+</head>
+
+<body>
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+        <div id="flash-messages">
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <header>
+        <h1>Tarefas</h1>
+        <p><a href="/add">Cadastrar Tarefa</a></p>
+    </header>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th>Título</th>
+                <th>Descrição</th>
+                <th>Prioridade</th>
+                <th>Criado em:</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in dados %}
+            <tr class="{% if d.status == 'done' %}done{% endif %}">
+                <td>
+                    <input type="checkbox" disabled {% if d.status == 'done' %}checked{% endif %}>
+                </td>
+                <td>{{ d.title }}</td>
+                <td>{{ d.description }}</td>
+                <td class="{{ d.priority }}">{{ d.priority }}</td>
+                <td>{{ d.created_at }}</td>
+                <td>
+                    <a href="{{ url_for('update_task', task_id=d.id) }}">✎</a>
+                </td>
+                <td>
+                    <a href="{{ url_for('delete_task', task_id=d.id) }}"
+                    onclick="return confirm('Tem certeza que deseja deletar este tarefa?');">
+                    🗑
+                    </a>
+                </td>
+            </tr>
+
+            {% else %}
+                <tr>
+                    <td colspan="7" class="empty">Nenhum tarefa registrado até o momento...</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        setTimeout(() => {
+            const flash = document.getElementById('flash-messages');
+            if (flash) {
+                flash.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+</body>
+
+</html>
